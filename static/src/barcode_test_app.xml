@@ -6,22 +6,35 @@
                 <h1>Test Hybrid Devices (Keyboard vs WebSocket)</h1>
                 
                 <div class="d-flex align-items-center mt-3 mb-4">
-                    <div t-attf-class="spinner-grow spinner-grow-sm me-2 text-{{ state.wsConnected ? 'success' : 'danger' }}" role="status"></div>
-                    <strong t-attf-class="text-{{ state.wsConnected ? 'success' : 'danger' }}">
-                        Local Server: <t t-esc="state.wsStatus"/>
+                    <div t-attf-class="spinner-grow spinner-grow-sm me-2 text-{{ state.wsConnected ? 'success' : 'danger' }}" role="status" t-if="!state.isReading"></div>
+                    <div class="spinner-border spinner-border-sm me-2 text-warning" role="status" t-if="state.isReading"></div>
+                    <strong t-attf-class="text-{{ state.isReading ? 'warning' : (state.wsConnected ? 'success' : 'danger') }} me-4">
+                        Local Server: <t t-esc="state.isReading ? 'Reading Devices...' : state.wsStatus"/>
                     </strong>
                     
-                    <button class="btn btn-primary ms-4" 
-                            t-att-disabled="!state.wsConnected" 
-                            t-on-click="() => this.triggerRFID('WS')">
-                        <i class="fa fa-wifi me-2"></i> Trigger RFID (WebSocket)
-                    </button>
-                    <button class="btn btn-secondary ms-2" 
-                            t-att-disabled="!state.wsConnected" 
-                            t-on-click="() => this.triggerRFID('KEYBOARD')">
-                        <i class="fa fa-keyboard-o me-2"></i> Trigger RFID (Keyboard)
-                    </button>
+                    <div class="d-flex align-items-center me-3 border-start ps-3">
+                        <label class="me-2 small fw-bold text-muted">WS Timeout:</label>
+                        <input type="number" class="form-control form-control-sm me-2" style="width: 80px;" t-model.number="state.wsDuration" t-att-disabled="state.isReading"/>
+                        <button class="btn btn-primary btn-sm" 
+                                t-att-disabled="!state.wsConnected || state.isReading" 
+                                t-on-click="() => this.triggerRFID('WS')">
+                            <i class="fa fa-wifi me-1"></i> Send (WS)
+                        </button>
+                    </div>
 
+                    <div class="d-flex align-items-center border-start ps-3">
+                        <label class="me-2 small fw-bold text-muted">KB Timeout:</label>
+                        <input type="number" class="form-control form-control-sm me-2" style="width: 80px;" t-model.number="state.keyboardDuration" t-att-disabled="state.isReading"/>
+                        <button class="btn btn-secondary btn-sm" 
+                                t-att-disabled="!state.wsConnected || state.isReading" 
+                                t-on-click="() => this.triggerRFID('KEYBOARD')">
+                            <i class="fa fa-keyboard-o me-1"></i> Send (KB)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning py-2 mb-3" t-if="state.isReading">
+                    <i class="fa fa-spinner fa-spin me-2"/> <b>Xin chờ:</b> Đang thu thập dữ liệu từ thiết bị phần cứng... Hệ thống sẽ bung cảnh báo nếu quá thời gian.
                 </div>
 
                 <div class="row">

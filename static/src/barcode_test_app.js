@@ -14,11 +14,21 @@ export class BarcodeTestApp extends Component {
             lastScannedBarcode: "",
             scanHistory: [],
             wsStatus: "Connecting...",
-            wsConnected: false
+            wsConnected: false,
+            isReading: false,
+            wsDuration: 1000,
+            keyboardDuration: 3000
         });
+        
+        this.timeoutHandle = null;
 
         // 1. Lắng nghe Keyboard Emulation (Bus)
         useBus(this.barcodeService.bus, "barcode_scanned", (ev) => {
+            if (this.state.isReading) {
+                this.state.isReading = false;
+                if (this.timeoutHandle) clearTimeout(this.timeoutHandle);
+            }
+            
             const barcode = ev.detail.barcode;
             this.state.lastScannedBarcode = barcode;
             
@@ -65,6 +75,11 @@ export class BarcodeTestApp extends Component {
             try {
                 const payload = JSON.parse(event.data);
                 if (payload.type === "rfid_bulk" && Array.isArray(payload.data)) {
+                    if (this.state.isReading) {
+                        this.state.isReading = false;
+                        if (this.timeoutHandle) clearTimeout(this.timeoutHandle);
+                    }
+                    
                     // Xử lý nguyên mảng JSON cùng lúc
                     const now = new Date();
                     const timeStr = now.toLocaleTimeString() + "." + now.getMilliseconds().toString().padStart(3, '0');
@@ -85,15 +100,33 @@ export class BarcodeTestApp extends Component {
     }
 
     triggerRFID(mode) {
-        if (this.ws && this.state.wsConnected) {
-            if (mode === "WS") {
-                this.ws.send(JSON.stringify({ action: "READ_RFID" }));
-            } else if (mode === "KEYBOARD") {
-                this.ws.send(JSON.stringify({ action: "READ_RFID_KEYBOARD" }));
-            }
-        } else {
+        if (!this.ws || !this.state.wsConnected) {
             alert("WebSocket is not connected!");
+            return;
         }
+
+        let duration = 1000;
+        let action = "";
+
+        if (mode === "WS") {
+            action = "READ_RFID";
+            duration = this.state.wsDuration;
+        } else if (mode === "KEYBOARD") {
+            action = "READ_RFID_KEYBOARD";
+            duration = this.state.keyboardDuration;
+        }
+        
+        this.state.isReading = true;
+        this.ws.send(JSON.stringify({ action: action, duration: duration }));
+
+        // Timeout buffer allows +1500ms
+        if (this.timeoutHandle) clearTimeout(this.timeoutHandle);
+        this.timeoutHandle = setTimeout(() => {
+            if (this.state.isReading) {
+                this.state.isReading = false;
+                alert("Timeout: Could not connect to the device or device did not respond in time!");
+            }
+        }, duration + 1500);
     }
 }
 
