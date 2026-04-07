@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_test_barcode" model="ir.actions.client">
+        <field name="name">Test Barcode</field>
+        <field name="tag">test_barcode_service.main_app</field>
+    </record>
+
+    <menuitem id="menu_test_barcode_root" name="Test Barcode" sequence="10"/>
+    <menuitem id="menu_test_barcode" parent="menu_test_barcode_root" action="action_test_barcode" sequence="10"/>
+</odoo>

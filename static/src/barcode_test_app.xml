@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="test_barcode_service.BarcodeTestApp" owl="1">
+        <div class="o_action o_view_controller">
+            <div class="h-100 bg-white p-4">
+                <h1>Test Hybrid Devices (Keyboard vs WebSocket)</h1>
+                
+                <div class="d-flex align-items-center mt-3 mb-4">
+                    <div t-attf-class="spinner-grow spinner-grow-sm me-2 text-{{ state.wsConnected ? 'success' : 'danger' }}" role="status"></div>
+                    <strong t-attf-class="text-{{ state.wsConnected ? 'success' : 'danger' }}">
+                        Local Server: <t t-esc="state.wsStatus"/>
+                    </strong>
+                    
+                    <button class="btn btn-primary ms-4" 
+                            t-att-disabled="!state.wsConnected" 
+                            t-on-click="() => this.triggerRFID('WS')">
+                        <i class="fa fa-wifi me-2"></i> Trigger RFID (WebSocket)
+                    </button>
+                    <button class="btn btn-secondary ms-2" 
+                            t-att-disabled="!state.wsConnected" 
+                            t-on-click="() => this.triggerRFID('KEYBOARD')">
+                        <i class="fa fa-keyboard-o me-2"></i> Trigger RFID (Keyboard)
+                    </button>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 border-end">
+                        <p class="text-muted">
+                            <b>Option 1 (Keyboard):</b> Set cursor anywhere and use scanner or WinForms App to send keystrokes.
+                        </p>
+                        <p class="text-muted">
+                            <b>Option 2 (WebSocket):</b> Click "Trigger RFID" above, or use the WinForms App "Send via WebSocket" button.
+                        </p>
+                        
+                        <div class="alert alert-info mt-4">
+                            <h3>Last Scanned: <t t-esc="state.lastScannedBarcode || 'None'"/></h3>
+                        </div>
+                    </div>
+                
+                    <div class="col-md-6 px-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4>Scan History <t t-if="state.scanHistory.length > 0">(<t t-esc="state.scanHistory.length"/>)</t></h4>
+                            <button class="btn btn-sm btn-outline-secondary" t-on-click="() => state.scanHistory = []">Clear</button>
+                        </div>
+                        <div style="max-height: 400px; overflow-y: auto;" t-if="state.scanHistory.length > 0">
+                            <ul class="list-group">
+                                <t t-foreach="state.scanHistory" t-as="item" t-key="item_index">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <span t-attf-class="badge rounded-pill me-3 text-bg-{{ item.source == 'WebSocket' ? 'success' : 'secondary' }}" style="width: 100px;">
+                                                <t t-esc="item.source"/>
+                                            </span>
+                                            <b><t t-esc="item.barcode"/></b>
+                                        </div>
+                                        <span class="text-muted small">
+                                            <t t-esc="item.time"/>
+                                        </span>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+</templates>
