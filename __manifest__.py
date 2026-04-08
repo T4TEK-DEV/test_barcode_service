@@ -3,8 +3,12 @@
     'version': '1.0',
     'category': 'Hidden',
     'summary': 'Test barcode scanner service',
-    'depends': ['base', 'web', 'barcodes'],
+    'depends': ['web', 'barcodes', 't4_sequential_auto_input', 't4_passivehid_bridge'],
     'data': [
+        'security/ir.model.access.csv',
+        'views/active_test_views.xml',
+        'views/passive_test_views.xml',
+        'views/hybrid_test_views.xml',
         'views/menus.xml',
         'views/res_config_settings_views.xml',
     ],

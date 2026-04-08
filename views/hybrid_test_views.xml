@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================ -->
+    <!--              HYBRID FORM: Active HID + Passive WebSocket         -->
+    <!-- ================================================================ -->
+
+    <record id="view_barcode_test_hybrid_form" model="ir.ui.view">
+        <field name="name">t4.barcode.test.hybrid.form</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <form string="Test Hybrid — HID + RFID (Form)">
+                <header />
+                <div class="alert alert-warning" role="alert">
+                    <strong>Test KẾT HỢP: Active HID + Passive WebSocket</strong>
+                    <ul class="mb-0 mt-1">
+                        <li><b>Active (HID):</b> Quét barcode bàn phím → tự điền tuần tự theo <code>data-auto-input-order</code></li>
+                        <li><b>Passive (WebSocket):</b> Nhấn nút Scan trên header → RFID/cân push data về</li>
+                        <li>Cả hai hoạt động <b>đồng thời</b> trên cùng 1 form</li>
+                    </ul>
+                    <small class="text-muted">
+                        Context: <code>t4_auto_input_enabled=True</code> + <code>t4_passive_data_handler=True</code> + <code>t4_passive_buttons=[...]</code>
+                    </small>
+                </div>
+                <sheet>
+                    <group>
+                        <group string="Active HID (sequential scan)">
+                            <field name="name"         data-auto-input-order="0" />
+                            <field name="barcode"      data-auto-input-order="1" />
+                            <field name="serial"       data-auto-input-order="2" />
+                            <field name="product_code" data-auto-input-order="3" />
+                        </group>
+                        <group string="Passive WebSocket (auto-fill)">
+                            <field name="rfid_tag"   readonly="1" />
+                            <field name="scan_count" readonly="1" />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Thông tin bổ sung">
+                            <field name="lot_number" data-auto-input-order="4" />
+                            <field name="quantity"   data-auto-input-order="5" />
+                            <field name="weight" />
+                            <field name="is_verified" />
+                        </group>
+                        <group string="Ghi chú">
+                            <field name="note" readonly="1"
+                                   placeholder="Danh sách thẻ RFID quét được..." />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--              HYBRID LIST: Active HID + Passive WebSocket         -->
+    <!-- ================================================================ -->
+
+    <record id="view_barcode_test_hybrid_list" model="ir.ui.view">
+        <field name="name">t4.barcode.test.hybrid.list</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <list string="Test Hybrid — HID + RFID (List)" editable="top">
+                <field name="name"         data-auto-input-order="0" />
+                <field name="barcode"      data-auto-input-order="1" />
+                <field name="serial"       data-auto-input-order="2" />
+                <field name="rfid_tag" />
+                <field name="scan_count" />
+                <field name="note" />
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--                         ACTIONS                                  -->
+    <!-- ================================================================ -->
+
+    <!-- Hybrid Form: HID sequential + RFID toggle -->
+    <record id="action_barcode_test_hybrid_form" model="ir.actions.act_window">
+        <field name="name">Form — HID + RFID</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_barcode_test_hybrid_form"/>
+        <field name="context">{
+            't4_auto_input_enabled': True,
+            't4_passive_data_handler': True,
+            't4_passive_buttons': [
+                {
+                    'id': 'rfid_reader',
+                    'title': 'Quet RFID',
+                    'icon': 'fa-wifi',
+                    'url': 'http://localhost:9001',
+                    'timeout': 5000,
+                    'toggle': True,
+                    'command': 'read',
+                    'data_field': 'rfid_tag',
+                    'note_field': 'note',
+                    'count_field': 'scan_count',
+                },
+            ],
+        }</field>
+    </record>
+
+    <!-- Hybrid List: HID sequential + RFID toggle -->
+    <record id="action_barcode_test_hybrid_list" model="ir.actions.act_window">
+        <field name="name">List — HID + RFID</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_barcode_test_hybrid_list"/>
+        <field name="context">{
+            't4_auto_input_enabled': True,
+            't4_passive_data_handler': True,
+            't4_passive_buttons': [
+                {
+                    'id': 'rfid_reader',
+                    'title': 'Quet RFID',
+                    'icon': 'fa-wifi',
+                    'url': 'http://localhost:9001',
+                    'timeout': 5000,
+                    'toggle': True,
+                    'command': 'read',
+                    'data_field': 'rfid_tag',
+                },
+            ],
+        }</field>
+    </record>
+
+</odoo>

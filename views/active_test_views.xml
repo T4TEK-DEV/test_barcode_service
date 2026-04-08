@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================ -->
+    <!--                         FORM VIEWS                               -->
+    <!-- ================================================================ -->
+
+    <!-- ===== 1. Basic (Form) ===== -->
+    <record id="view_barcode_test_form_sequential" model="ir.ui.view">
+        <field name="name">t4.barcode.test.form.sequential</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <form string="Test Auto Input (Form)">
+                <div class="alert alert-info" role="alert">
+                    <strong>Hướng dẫn:</strong>
+                    <ul class="mb-0 mt-1">
+                        <li>Quét barcode liên tục → tự điền tuần tự theo thứ tự 0→1→2→3</li>
+                        <li>Hoặc nhấn icon <b>QR</b> bên cạnh trường bất kỳ → quét vào đúng trường đó</li>
+                        <li>Trường không có <code>data-auto-input-order</code> → không tham gia</li>
+                    </ul>
+                    <small class="text-muted">Context: <code>t4_auto_input_enabled=True</code></small>
+                </div>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Tên (quét đầu tiên)"
+                                   data-auto-input-order="0" /></h1>
+                    </div>
+                    <group>
+                        <group string="Trường tham gia (có data-auto-input-order)">
+                            <field name="barcode"    data-auto-input-order="1" />
+                            <field name="serial"     data-auto-input-order="2" />
+                            <field name="lot_number" data-auto-input-order="3" />
+                        </group>
+                        <group string="Trường thường (không tham gia)">
+                            <field name="note" />
+                            <field name="is_verified" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== 2. Syntax Demo (Form) ===== -->
+    <record id="view_barcode_test_form_manual" model="ir.ui.view">
+        <field name="name">t4.barcode.test.form.manual</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <form string="Test — Syntax đơn giản">
+                <div class="alert alert-success" role="alert">
+                    <strong>Cú pháp mới (chỉ cần 1 attribute):</strong>
+                    <pre class="mb-0 mt-1" style="font-size:12px">
+&lt;field name="barcode" data-auto-input-order="0" /&gt;
+&lt;field name="serial"  data-auto-input-order="1" /&gt;</pre>
+                    <small class="text-muted">
+                        Mỗi field có order → tự động nhận được: quét tuần tự <b>VÀ</b> nút QR thủ công.
+                        Context: <code>t4_auto_input_enabled=True</code>
+                    </small>
+                </div>
+                <sheet>
+                    <group>
+                        <group string="Tất cả đều có sequential + QR button">
+                            <field name="name"             data-auto-input-order="0" />
+                            <field name="barcode"          data-auto-input-order="1" />
+                            <field name="serial"           data-auto-input-order="2" />
+                            <field name="rfid_tag"         data-auto-input-order="3" />
+                            <field name="product_code"     data-auto-input-order="4" />
+                            <field name="location_barcode" data-auto-input-order="5" />
+                        </group>
+                        <group string="Không tham gia">
+                            <field name="note" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== 3. Mixed (Form) ===== -->
+    <record id="view_barcode_test_form_both" model="ir.ui.view">
+        <field name="name">t4.barcode.test.form.both</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <form string="Test — Kết hợp (có order vs không có order)">
+                <div class="alert alert-info" role="alert">
+                    <strong>Kết hợp:</strong>
+                    <ul class="mb-0 mt-1">
+                        <li>Trường <b>có order</b> → quét tuần tự + nút QR</li>
+                        <li>Trường <b>không có order</b> → nhập tay bình thường</li>
+                    </ul>
+                    <small class="text-muted">Context: <code>t4_auto_input_enabled=True</code></small>
+                </div>
+                <sheet>
+                    <group>
+                        <group string="Có order → tham gia auto input">
+                            <field name="barcode"          data-auto-input-order="0" />
+                            <field name="serial"           data-auto-input-order="1" />
+                            <field name="lot_number"       data-auto-input-order="2" />
+                            <field name="manufacturer_part" data-auto-input-order="3" />
+                            <field name="supplier_part"    data-auto-input-order="4" />
+                        </group>
+                        <group string="Không có order → nhập tay">
+                            <field name="name" />
+                            <field name="rfid_tag" />
+                            <field name="note" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== 4. Many Fields (Form) ===== -->
+    <record id="view_barcode_test_form_mixed" model="ir.ui.view">
+        <field name="name">t4.barcode.test.form.mixed</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <form string="Test — Nhiều trường">
+                <div class="alert alert-info" role="alert">
+                    <strong>Test nhiều trường với thứ tự khác nhau:</strong>
+                    <ul class="mb-0 mt-1">
+                        <li>Quét liên tục → điền theo order 0→1→2→3→4</li>
+                        <li>Mỗi trường đều có nút QR để chọn thủ công</li>
+                    </ul>
+                    <small class="text-muted">Context: <code>t4_auto_input_enabled=True</code></small>
+                </div>
+                <sheet>
+                    <group>
+                        <group string="Order 0-2">
+                            <field name="barcode"    data-auto-input-order="0" />
+                            <field name="serial"     data-auto-input-order="1" />
+                            <field name="lot_number" data-auto-input-order="2" />
+                        </group>
+                        <group string="Order 3-4">
+                            <field name="manufacturer_part" data-auto-input-order="3" />
+                            <field name="supplier_part"     data-auto-input-order="4" />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Không tham gia">
+                            <field name="name" />
+                            <field name="note" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== 5. Stress Test (Form) ===== -->
+    <record id="view_barcode_test_form_stress" model="ir.ui.view">
+        <field name="name">t4.barcode.test.form.stress</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <form string="Test Stress — Quét nhanh 10 trường">
+                <div class="alert alert-danger" role="alert">
+                    <strong>Test Rapid-fire (Queue Buffer):</strong>
+                    <ol class="mb-0 mt-1">
+                        <li>Mở Simulator → preset <b>"10 Serial"</b>, interval = <b>50ms</b></li>
+                        <li>Nhấn <b>"Gửi nhanh liên tục"</b></li>
+                        <li><b>Kỳ vọng:</b> Tất cả 10 trường điền đủ, không mất mã nào</li>
+                    </ol>
+                    <small class="text-muted">Context: <code>t4_auto_input_enabled=True</code></small>
+                </div>
+                <sheet>
+                    <group>
+                        <group string="Order 0-4">
+                            <field name="name"         data-auto-input-order="0" />
+                            <field name="barcode"      data-auto-input-order="1" />
+                            <field name="serial"       data-auto-input-order="2" />
+                            <field name="rfid_tag"     data-auto-input-order="3" />
+                            <field name="product_code" data-auto-input-order="4" />
+                        </group>
+                        <group string="Order 5-9">
+                            <field name="lot_number"        data-auto-input-order="5" />
+                            <field name="manufacturer_part"  data-auto-input-order="6" />
+                            <field name="supplier_part"      data-auto-input-order="7" />
+                            <field name="location_barcode"   data-auto-input-order="8" />
+                            <field name="description"        data-auto-input-order="9" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== 6. Data Types (Form) ===== -->
+    <record id="view_barcode_test_form_types" model="ir.ui.view">
+        <field name="name">t4.barcode.test.form.types</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <form string="Test — Ép kiểu dữ liệu">
+                <div class="alert alert-info" role="alert">
+                    <strong>Test ép kiểu:</strong>
+                    <ul class="mb-0 mt-1">
+                        <li>Quét <b>"ABC123"</b> → Barcode (char) giữ nguyên</li>
+                        <li>Quét <b>"42"</b> → Số lượng (integer) ép thành số nguyên</li>
+                        <li>Quét <b>"3.14"</b> → Trọng lượng (float) ép thành số thực</li>
+                        <li>Quét <b>"Nội dung dài..."</b> → Mô tả (text) giữ nguyên</li>
+                    </ul>
+                    <small class="text-muted">Context: <code>t4_auto_input_enabled=True</code></small>
+                </div>
+                <sheet>
+                    <group>
+                        <group string="Char">
+                            <field name="barcode" data-auto-input-order="0" />
+                            <field name="serial"  data-auto-input-order="1" />
+                        </group>
+                        <group string="Integer / Float">
+                            <field name="quantity" data-auto-input-order="2" />
+                            <field name="weight"   data-auto-input-order="3" />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Text">
+                            <field name="description" data-auto-input-order="4" />
+                        </group>
+                        <group string="Không tham gia">
+                            <field name="name" />
+                            <field name="note" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--                         LIST VIEWS                               -->
+    <!-- ================================================================ -->
+
+    <!-- ===== 7. Basic List ===== -->
+    <record id="view_barcode_test_list" model="ir.ui.view">
+        <field name="name">t4.barcode.test.list</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <list string="Test Auto Input (List)" editable="top">
+                <field name="name"    data-auto-input-order="0" />
+                <field name="barcode" data-auto-input-order="1" />
+                <field name="serial"  data-auto-input-order="2" />
+                <field name="rfid_tag" data-auto-input-order="3" />
+                <field name="note" />
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== 8. Many Columns List ===== -->
+    <record id="view_barcode_test_list_many" model="ir.ui.view">
+        <field name="name">t4.barcode.test.list.many</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <list string="Test Nhiều Cột (List)" editable="bottom">
+                <field name="barcode"           data-auto-input-order="0" />
+                <field name="serial"            data-auto-input-order="1" />
+                <field name="lot_number"        data-auto-input-order="2" />
+                <field name="manufacturer_part" data-auto-input-order="3" />
+                <field name="supplier_part"     data-auto-input-order="4" />
+                <field name="rfid_tag"          data-auto-input-order="5" />
+                <field name="location_barcode"  data-auto-input-order="6" />
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== 9. Data Types List ===== -->
+    <record id="view_barcode_test_list_types" model="ir.ui.view">
+        <field name="name">t4.barcode.test.list.types</field>
+        <field name="model">t4.barcode.test</field>
+        <field name="arch" type="xml">
+            <list string="Test Kiểu Dữ Liệu (List)" editable="top">
+                <field name="product_code" data-auto-input-order="0" />
+                <field name="quantity"     data-auto-input-order="1" />
+                <field name="weight"       data-auto-input-order="2" />
+                <field name="name" />
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--                         ACTIONS                                  -->
+    <!-- ================================================================ -->
+
+    <record id="action_barcode_test_sequential_form" model="ir.actions.act_window">
+        <field name="name">Basic (Form)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_barcode_test_form_sequential"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+    <record id="action_barcode_test_manual_form" model="ir.actions.act_window">
+        <field name="name">Syntax Demo (Form)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_barcode_test_form_manual"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+    <record id="action_barcode_test_both_form" model="ir.actions.act_window">
+        <field name="name">Kết hợp (Form)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_barcode_test_form_both"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+    <record id="action_barcode_test_mixed_form" model="ir.actions.act_window">
+        <field name="name">Nhiều trường (Form)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_barcode_test_form_mixed"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+    <record id="action_barcode_test_stress_form" model="ir.actions.act_window">
+        <field name="name">Stress 10 trường (Form)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_barcode_test_form_stress"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+    <record id="action_barcode_test_types_form" model="ir.actions.act_window">
+        <field name="name">Ép kiểu dữ liệu (Form)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_barcode_test_form_types"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+    <record id="action_barcode_test_sequential_list" model="ir.actions.act_window">
+        <field name="name">Basic (List)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_barcode_test_list"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+    <record id="action_barcode_test_list_many" model="ir.actions.act_window">
+        <field name="name">Nhiều cột (List)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_barcode_test_list_many"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+    <record id="action_barcode_test_list_types" model="ir.actions.act_window">
+        <field name="name">Ép kiểu dữ liệu (List)</field>
+        <field name="res_model">t4.barcode.test</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_barcode_test_list_types"/>
+        <field name="context">{'t4_auto_input_enabled': True}</field>
+    </record>
+
+</odoo>
