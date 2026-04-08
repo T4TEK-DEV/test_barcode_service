@@ -13,3 +13,13 @@ class ResConfigSettings(models.TransientModel):
         string="Ignore Editable Elements",
         help="If checked, barcode scanning will be ignored when the user is typing in an input field."
     )
+    barcode_batch_delimiter = fields.Char(
+        related='company_id.barcode_batch_delimiter', readonly=False,
+        string="Batch Delimiter",
+        help="Delimiter to split batch keyboard scans into multiple barcodes (e.g. '|'). Leave empty to disable."
+    )
+    barcode_batch_delay_ms = fields.Integer(
+        related='company_id.barcode_batch_delay_ms', readonly=False,
+        string="Batch Delay (ms)",
+        help="Wait time to collect rapid-fire barcodes before processing. 0 = process each barcode immediately."
+    )

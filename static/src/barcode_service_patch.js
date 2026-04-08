@@ -30,12 +30,38 @@ patch(barcodeService, {
         let currentTarget = null;
         let barcodeInput = null;
 
+        let barcodeBuffer = [];
+        let batchFlushTimeout = null;
+
         function handleBarcode(barcode, target) {
             bus.trigger('barcode_scanned', {barcode,target});
             if (target && target.getAttribute && target.getAttribute('barcode_events') === "true") {
                 const barcodeScannedEvent = new CustomEvent("barcode_scanned", { detail: { barcode, target } });
                 target.dispatchEvent(barcodeScannedEvent);
             }
+        }
+
+        function flushBarcodeBuffer() {
+            const items = [...barcodeBuffer];
+            barcodeBuffer = [];
+            for (const { barcode, target } of items) {
+                handleBarcode(barcode, target);
+            }
+        }
+
+        function enqueueBarcodes(barcodes, target) {
+            const batchDelay = session.barcode_batch_delay_ms ?? 0;
+            if (batchDelay <= 0) {
+                for (const barcode of barcodes) {
+                    handleBarcode(barcode, target);
+                }
+                return;
+            }
+            for (const barcode of barcodes) {
+                barcodeBuffer.push({ barcode, target });
+            }
+            clearTimeout(batchFlushTimeout);
+            batchFlushTimeout = setTimeout(flushBarcodeBuffer, batchDelay);
         }
 
         function checkBarcode(ev) {
@@ -45,7 +71,14 @@ patch(barcodeService, {
                 if (ev) {
                     ev.preventDefault();
                 }
-                handleBarcode(str, currentTarget);
+                const delimiter = session.barcode_batch_delimiter || "";
+                let barcodes;
+                if (delimiter && str.includes(delimiter)) {
+                    barcodes = str.split(delimiter).filter(b => b.length >= 1);
+                } else {
+                    barcodes = [str];
+                }
+                enqueueBarcodes(barcodes, currentTarget);
             }
             if (barcodeInput) {
                 barcodeInput.value = "";
@@ -98,6 +131,26 @@ patch(barcodeService, {
             keydownHandler(ev);
         }
 
+        function pasteHandler(ev) {
+            const delimiter = session.barcode_batch_delimiter || "";
+            if (!delimiter) return;
+
+            const text = (ev.clipboardData || window.clipboardData)?.getData("text");
+            if (!text || !text.includes(delimiter)) return;
+
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            currentTarget = ev.target;
+            const barcodes = text.split(delimiter).filter(b => b.length >= 1);
+            enqueueBarcodes(barcodes, currentTarget);
+
+            bufferedBarcode = "";
+            currentTarget = null;
+
+            navigator.clipboard.writeText("").catch(() => {});
+        }
+
         whenReady(() => {
             const isMobileChrome = isMobileOS() && isBrowserChrome();
             if (isMobileChrome) {
@@ -106,6 +159,7 @@ patch(barcodeService, {
             }
             const handler = isMobileChrome ? mobileChromeHandler : keydownHandler;
             document.body.addEventListener('keydown', handler);
+            document.body.addEventListener('paste', pasteHandler, true);
         });
 
         return {

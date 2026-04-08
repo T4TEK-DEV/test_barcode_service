@@ -9,5 +9,7 @@ class IrHttp(models.AbstractModel):
         result.update({
             'barcode_max_time_ms': company.barcode_max_time_ms if company else 150,
             'barcode_ignore_editable': company.barcode_ignore_editable if company else True,
+            'barcode_batch_delimiter': company.barcode_batch_delimiter if company else '',
+            'barcode_batch_delay_ms': company.barcode_batch_delay_ms if company else 0,
         })
         return result

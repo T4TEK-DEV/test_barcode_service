@@ -25,8 +25,8 @@
                     <div class="d-flex align-items-center border-start ps-3">
                         <label class="me-2 small fw-bold text-muted">KB Timeout:</label>
                         <input type="number" class="form-control form-control-sm me-2" style="width: 80px;" t-model.number="state.keyboardDuration" t-att-disabled="state.isReading"/>
-                        <button class="btn btn-secondary btn-sm" 
-                                t-att-disabled="!state.wsConnected || state.isReading" 
+                        <button class="btn btn-secondary btn-sm"
+                                t-att-disabled="!state.wsConnected || state.isReading"
                                 t-on-click="() => this.triggerRFID('KEYBOARD')">
                             <i class="fa fa-keyboard-o me-1"></i> Send (KB)
                         </button>
@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="alert alert-warning py-2 mb-3" t-if="state.isReading">
-                    <i class="fa fa-spinner fa-spin me-2"/> <b>Xin chờ:</b> Đang thu thập dữ liệu từ thiết bị phần cứng... Hệ thống sẽ bung cảnh báo nếu quá thời gian.
+                    <i class="fa fa-spinner fa-spin me-2"/> <b>Xin chờ:</b> Đang thu thập dữ liệu từ thiết bị phần cứng...
                 </div>
 
                 <div class="row">
@@ -59,16 +59,24 @@
                         <div style="max-height: 400px; overflow-y: auto;" t-if="state.scanHistory.length > 0">
                             <ul class="list-group">
                                 <t t-foreach="state.scanHistory" t-as="item" t-key="item_index">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1">
                                         <div class="d-flex align-items-center">
-                                            <span t-attf-class="badge rounded-pill me-3 text-bg-{{ item.source == 'WebSocket' ? 'success' : 'secondary' }}" style="width: 100px;">
+                                            <span class="badge text-bg-light me-2 small" t-if="item.index" style="width:28px;">
+                                                <t t-esc="item.index"/>
+                                            </span>
+                                            <span t-attf-class="badge rounded-pill me-2 text-bg-{{ item.source == 'WebSocket' ? 'success' : 'secondary' }}" style="width: 80px; font-size:0.7em;">
                                                 <t t-esc="item.source"/>
                                             </span>
                                             <b><t t-esc="item.barcode"/></b>
                                         </div>
-                                        <span class="text-muted small">
-                                            <t t-esc="item.time"/>
-                                        </span>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge text-bg-info me-2" t-if="item.elapsed" style="font-size:0.7em;">
+                                                <t t-esc="item.elapsed"/>
+                                            </span>
+                                            <span class="text-muted small" style="width:90px; text-align:right;">
+                                                <t t-esc="item.time"/>
+                                            </span>
+                                        </div>
                                     </li>
                                 </t>
                             </ul>

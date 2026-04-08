@@ -14,6 +14,12 @@
                         <setting string="Ignore Editable Fields" help="Do not catch scans when user is typing in inputs">
                             <field name="barcode_ignore_editable"/>
                         </setting>
+                        <setting string="Batch Delimiter" help="Character to split batch keyboard scans (e.g. '|'). Empty = disabled.">
+                            <field name="barcode_batch_delimiter" placeholder="|"/>
+                        </setting>
+                        <setting string="Batch Delay" help="Wait time (ms) to collect rapid-fire barcodes. 0 = process immediately.">
+                            <field name="barcode_batch_delay_ms"/>
+                        </setting>
                     </block>
                 </app>
             </xpath>

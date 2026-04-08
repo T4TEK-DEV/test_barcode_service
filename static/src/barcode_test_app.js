@@ -21,21 +21,38 @@ export class BarcodeTestApp extends Component {
         });
         
         this.timeoutHandle = null;
+        this.triggerTime = null;
+        this.firstBarcodeTime = null;
+        this.lastBarcodeTime = null;
+        this.barcodeCount = 0;
 
         // 1. Lắng nghe Keyboard Emulation (Bus)
         useBus(this.barcodeService.bus, "barcode_scanned", (ev) => {
+            const now = performance.now();
+            this.barcodeCount++;
+            if (!this.firstBarcodeTime) {
+                this.firstBarcodeTime = now;
+            }
+            this.lastBarcodeTime = now;
+
             if (this.state.isReading) {
                 this.state.isReading = false;
                 if (this.timeoutHandle) clearTimeout(this.timeoutHandle);
             }
-            
+
             const barcode = ev.detail.barcode;
             this.state.lastScannedBarcode = barcode;
-            
+
+            const elapsed = this.triggerTime ? Math.round(now - this.triggerTime) : 0;
+            const sinceFirst = this.firstBarcodeTime ? Math.round(now - this.firstBarcodeTime) : 0;
+
             this.state.scanHistory.unshift({
-                barcode: barcode,
+                barcode,
                 source: "Keyboard HID",
-                time: new Date().toLocaleTimeString() + "." + new Date().getMilliseconds().toString().padStart(3, '0')
+                time: new Date().toLocaleTimeString() + "." + new Date().getMilliseconds().toString().padStart(3, '0'),
+                elapsed: `+${elapsed}ms`,
+                sinceFirst: `+${sinceFirst}ms`,
+                index: this.barcodeCount,
             });
         });
 
@@ -115,18 +132,21 @@ export class BarcodeTestApp extends Component {
             action = "READ_RFID_KEYBOARD";
             duration = this.state.keyboardDuration;
         }
-        
-        this.state.isReading = true;
-        this.ws.send(JSON.stringify({ action: action, duration: duration }));
 
-        // Timeout buffer allows +1500ms
+        this.triggerTime = performance.now();
+        this.firstBarcodeTime = null;
+        this.lastBarcodeTime = null;
+        this.barcodeCount = 0;
+
+        this.state.isReading = true;
+        this.ws.send(JSON.stringify({ action, duration }));
+
         if (this.timeoutHandle) clearTimeout(this.timeoutHandle);
         this.timeoutHandle = setTimeout(() => {
             if (this.state.isReading) {
                 this.state.isReading = false;
-                alert("Timeout: Could not connect to the device or device did not respond in time!");
             }
-        }, duration + 1500);
+        }, duration + 5000);
     }
 }
 
