@@ -9,37 +9,35 @@
         <field name="name">t4.barcode.test.passive.form</field>
         <field name="model">t4.barcode.test</field>
         <field name="arch" type="xml">
-            <form string="Test Passive HID Bridge">
+            <form string="Test Passive HID Bridge (KB Mode)">
                 <header />
                 <div class="alert alert-info" role="alert">
-                    <strong>Test Passive Device (WebSocket + T4HidBridge):</strong>
+                    <strong>Test Passive Device (Keyboard Emulation):</strong>
                     <ol class="mb-0 mt-1">
-                        <li>Chạy <b>T4HidBridge.Host</b> → Add server port <b>9001</b> → Start</li>
-                        <li>Mở view này → browser tự kết nối WebSocket <code>ws://localhost:9001/ws</code></li>
-                        <li>Nhấn nút <b>Scan</b> trên header → thiết bị đọc → data push về tự động</li>
-                        <li><b>toggle=True:</b> Nút bật/tắt, tự dừng sau <code>timeout</code> ms</li>
-                        <li><b>toggle=False:</b> Nhấn 1 lần → đọc 1 lần</li>
+                        <li>Chay <b>C# BarcodeSimulator</b> (hoac T4HidBridge) → port <b>9001</b></li>
+                        <li>Mo view nay → browser tu ket noi WebSocket <code>ws://localhost:9001</code></li>
+                        <li>Nhan nut <b>Scan</b> tren header → gui <code>READ_RFID_KEYBOARD</code></li>
+                        <li>Server doc thiet bi → go data qua Keyboard (Ctrl+V)</li>
+                        <li>Barcode service bat paste → split delimiter <code>|</code> → dien field tuan tu</li>
                     </ol>
                     <small class="text-muted">
-                        Context: <code>t4_passive_data_handler=True</code> + <code>t4_passive_buttons=[...]</code><br/>
-                        RFID Tag = thẻ mới nhất · Note = toàn bộ danh sách · Scan Count = tổng số lần nhận
+                        Context: <code>t4_auto_input_enabled=True</code> + <code>t4_passive_buttons=[...]</code><br/>
+                        <b>toggle=True:</b> Nut bat/tat, tu dung sau <code>timeout</code> ms ·
+                        <b>toggle=False:</b> Nhan 1 lan → doc 1 lan
                     </small>
                 </div>
                 <sheet>
                     <group>
-                        <group string="Kết quả quét">
-                            <field name="rfid_tag"   readonly="1" />
-                            <field name="scan_count" readonly="1" />
+                        <group string="Ket qua quet (tuan tu)">
+                            <field name="rfid_tag"   data-auto-input-order="0" />
+                            <field name="barcode"    data-auto-input-order="1" />
+                            <field name="serial"     data-auto-input-order="2" />
                         </group>
-                        <group string="Thông tin">
+                        <group string="Thong tin">
                             <field name="name" />
-                            <field name="barcode" />
-                            <field name="serial" />
+                            <field name="scan_count" />
+                            <field name="note" />
                         </group>
-                    </group>
-                    <group>
-                        <field name="note" readonly="1"
-                               placeholder="Danh sách thẻ quét được sẽ hiện ở đây..." />
                     </group>
                 </sheet>
             </form>
@@ -55,9 +53,9 @@
         <field name="model">t4.barcode.test</field>
         <field name="arch" type="xml">
             <list string="Test Passive HID Bridge (List)" editable="top">
-                <field name="rfid_tag" />
-                <field name="barcode" />
-                <field name="serial" />
+                <field name="rfid_tag" data-auto-input-order="0" />
+                <field name="barcode"  data-auto-input-order="1" />
+                <field name="serial"   data-auto-input-order="2" />
                 <field name="name" />
                 <field name="note" />
             </list>
@@ -68,111 +66,101 @@
     <!--                         ACTIONS                                  -->
     <!-- ================================================================ -->
 
-    <!-- 1. Form: RFID Reader — toggle mode (tự dừng sau 5s) -->
+    <!-- 1. Form: RFID Reader — toggle mode (tu dung sau 5s) -->
     <record id="action_barcode_test_single_rfid" model="ir.actions.act_window">
-        <field name="name">Form — RFID Reader</field>
+        <field name="name">Form — RFID Reader (KB)</field>
         <field name="res_model">t4.barcode.test</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_barcode_test_passive_form"/>
         <field name="context">{
-            't4_passive_data_handler': True,
+            't4_auto_input_enabled': True,
             't4_passive_buttons': [
                 {
                     'id': 'rfid_reader',
                     'title': 'Quet RFID',
                     'icon': 'fa-wifi',
-                    'url': 'http://localhost:9001',
+                    'url': 'http://localhost:9001/scan',
                     'timeout': 5000,
                     'toggle': True,
-                    'command': 'read',
-                    'data_field': 'rfid_tag',
-                    'note_field': 'note',
-                    'count_field': 'scan_count',
                 },
             ],
         }</field>
     </record>
 
-    <!-- 2. Form: Weight Scale — one-shot -->
+    <!-- 2. Form: NFC — one-shot -->
     <record id="action_barcode_test_single_weight" model="ir.actions.act_window">
-        <field name="name">Form — Cân điện tử</field>
+        <field name="name">Form — NFC One-shot (KB)</field>
         <field name="res_model">t4.barcode.test</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_barcode_test_passive_form"/>
         <field name="context">{
-            't4_passive_data_handler': True,
+            't4_auto_input_enabled': True,
             't4_passive_buttons': [
                 {
-                    'id': 'weight_scale',
-                    'title': 'Doc can',
-                    'icon': 'fa-balance-scale',
-                    'url': 'http://localhost:9001',
+                    'id': 'nfc',
+                    'title': 'NFC',
+                    'icon': 'fa-credit-card',
+                    'url': 'http://localhost:9004/scan',
                     'timeout': 3000,
                     'toggle': False,
-                    'command': 'weight',
-                    'data_field': 'rfid_tag',
-                    'note_field': 'note',
-                    'count_field': 'scan_count',
                 },
             ],
         }</field>
     </record>
 
-    <!-- 3. List: RFID — mỗi thẻ tạo 1 dòng mới -->
+    <!-- 3. List: RFID — moi the tao 1 dong moi -->
     <record id="action_barcode_test_list_rfid" model="ir.actions.act_window">
-        <field name="name">List — RFID (tự tạo dòng)</field>
+        <field name="name">List — RFID (KB)</field>
         <field name="res_model">t4.barcode.test</field>
         <field name="view_mode">list</field>
         <field name="view_id" ref="view_barcode_test_passive_list"/>
         <field name="context">{
-            't4_passive_data_handler': True,
+            't4_auto_input_enabled': True,
             't4_passive_buttons': [
                 {
                     'id': 'rfid_reader',
                     'title': 'Quet RFID',
                     'icon': 'fa-wifi',
-                    'url': 'http://localhost:9001',
+                    'url': 'http://localhost:9001/scan',
                     'timeout': 5000,
                     'toggle': True,
-                    'command': 'read',
-                    'data_field': 'rfid_tag',
                 },
             ],
         }</field>
     </record>
 
-    <!-- 4. Form: Multi device — RFID (toggle 5s) + Cân (one-shot) -->
+    <!-- 4. Form: Multi device — RFID + Camera + NFC -->
     <record id="action_barcode_test_multi_device" model="ir.actions.act_window">
-        <field name="name">Form — RFID + Cân</field>
+        <field name="name">Form — RFID + Camera + NFC (KB)</field>
         <field name="res_model">t4.barcode.test</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_barcode_test_passive_form"/>
         <field name="context">{
-            't4_passive_data_handler': True,
+            't4_auto_input_enabled': True,
             't4_passive_buttons': [
                 {
-                    'id': 'rfid_reader',
-                    'title': 'Quet RFID',
+                    'id': 'rfid',
+                    'title': 'RFID',
                     'icon': 'fa-wifi',
-                    'url': 'http://localhost:9001',
+                    'url': 'http://localhost:9001/scan',
                     'timeout': 5000,
                     'toggle': True,
-                    'command': 'read',
-                    'data_field': 'rfid_tag',
-                    'note_field': 'note',
-                    'count_field': 'scan_count',
                 },
                 {
-                    'id': 'weight_scale',
-                    'title': 'Doc can',
-                    'icon': 'fa-balance-scale',
-                    'url': 'http://localhost:9001',
+                    'id': 'cam',
+                    'title': 'Camera',
+                    'icon': 'fa-camera',
+                    'url': 'http://localhost:9003/scan',
+                    'timeout': 3000,
+                    'toggle': True,
+                },
+                {
+                    'id': 'nfc',
+                    'title': 'NFC',
+                    'icon': 'fa-credit-card',
+                    'url': 'http://localhost:9004/scan',
                     'timeout': 3000,
                     'toggle': False,
-                    'command': 'weight',
-                    'data_field': 'rfid_tag',
-                    'note_field': 'note',
-                    'count_field': 'scan_count',
                 },
             ],
         }</field>

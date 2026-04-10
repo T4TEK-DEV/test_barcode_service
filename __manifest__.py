@@ -16,7 +16,6 @@
         'web.assets_backend': [
             'test_barcode_service/static/src/barcode_test_app.xml',
             'test_barcode_service/static/src/barcode_test_app.js',
-            'test_barcode_service/static/src/barcode_service_patch.js',
         ],
     },
     'installable': True,

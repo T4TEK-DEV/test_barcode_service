@@ -94,11 +94,11 @@
               sequence="3" />
 
     <!-- ================================================================ -->
-    <!--                  PASSIVE DEVICE (WebSocket)                      -->
+    <!--                PASSIVE DEVICE (Keyboard Emulation)              -->
     <!-- ================================================================ -->
 
     <menuitem id="menu_passive_device"
-              name="Passive Device (WebSocket)"
+              name="Passive Device (KB Mode)"
               parent="menu_test_barcode_root"
               sequence="30" />
 
@@ -109,17 +109,17 @@
               sequence="10" />
 
     <menuitem id="menu_passive_rfid_form"
-              name="RFID Toggle (5s auto-stop)"
+              name="RFID Toggle (5s, KB)"
               parent="menu_passive_form_tests"
               action="action_barcode_test_single_rfid"
               sequence="1" />
     <menuitem id="menu_passive_weight_form"
-              name="Weight Scale (one-shot)"
+              name="NFC One-shot (KB)"
               parent="menu_passive_form_tests"
               action="action_barcode_test_single_weight"
               sequence="2" />
     <menuitem id="menu_passive_multi_form"
-              name="Multi Device (RFID + Cân)"
+              name="Multi Device (RFID + Camera + NFC)"
               parent="menu_passive_form_tests"
               action="action_barcode_test_multi_device"
               sequence="3" />
@@ -131,27 +131,27 @@
               sequence="20" />
 
     <menuitem id="menu_passive_rfid_list"
-              name="RFID (tự tạo dòng)"
+              name="RFID (KB)"
               parent="menu_passive_list_tests"
               action="action_barcode_test_list_rfid"
               sequence="1" />
 
     <!-- ================================================================ -->
-    <!--                    HYBRID (Active + Passive)                     -->
+    <!--                    HYBRID (Active + Passive KB)                  -->
     <!-- ================================================================ -->
 
     <menuitem id="menu_hybrid_device"
-              name="Hybrid (Active + Passive)"
+              name="Hybrid (HID + KB Mode)"
               parent="menu_test_barcode_root"
               sequence="40" />
 
     <menuitem id="menu_hybrid_form"
-              name="Form — HID + RFID"
+              name="Form — HID + RFID (KB)"
               parent="menu_hybrid_device"
               action="action_barcode_test_hybrid_form"
               sequence="1" />
     <menuitem id="menu_hybrid_list"
-              name="List — HID + RFID"
+              name="List — HID + RFID (KB)"
               parent="menu_hybrid_device"
               action="action_barcode_test_hybrid_list"
               sequence="2" />
