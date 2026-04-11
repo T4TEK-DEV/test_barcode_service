@@ -31,130 +31,14 @@
               sequence="10" />
 
     <!-- ================================================================ -->
-    <!--                    ACTIVE DEVICE (HID)                           -->
+    <!--                    COMPREHENSIVE TEST                            -->
     <!-- ================================================================ -->
 
-    <menuitem id="menu_active_device"
-              name="Active Device (HID)"
+    <menuitem id="menu_comprehensive_test"
+              name="Comprehensive Test (HID + KB)"
               parent="menu_test_barcode_root"
+              action="action_test_barcode_comprehensive"
               sequence="20" />
-
-    <!-- Form tests -->
-    <menuitem id="menu_active_form_tests"
-              name="Form Views"
-              parent="menu_active_device"
-              sequence="10" />
-
-    <menuitem id="menu_active_sequential_form"
-              name="Sequential (4 fields)"
-              parent="menu_active_form_tests"
-              action="action_barcode_test_sequential_form"
-              sequence="1" />
-    <menuitem id="menu_active_manual_form"
-              name="Syntax Demo (6 fields)"
-              parent="menu_active_form_tests"
-              action="action_barcode_test_manual_form"
-              sequence="2" />
-    <menuitem id="menu_active_both_form"
-              name="Mixed (order vs no order)"
-              parent="menu_active_form_tests"
-              action="action_barcode_test_both_form"
-              sequence="3" />
-    <menuitem id="menu_active_mixed_form"
-              name="Stress Test (10 fields)"
-              parent="menu_active_form_tests"
-              action="action_barcode_test_stress_form"
-              sequence="4" />
-    <menuitem id="menu_active_types_form"
-              name="Data Types (int, float, text)"
-              parent="menu_active_form_tests"
-              action="action_barcode_test_types_form"
-              sequence="5" />
-
-    <!-- List tests -->
-    <menuitem id="menu_active_list_tests"
-              name="List Views"
-              parent="menu_active_device"
-              sequence="20" />
-
-    <menuitem id="menu_active_basic_list"
-              name="Basic (3 cols, editable top)"
-              parent="menu_active_list_tests"
-              action="action_barcode_test_sequential_list"
-              sequence="1" />
-    <menuitem id="menu_active_many_list"
-              name="Many Columns (7 cols, editable bottom)"
-              parent="menu_active_list_tests"
-              action="action_barcode_test_list_many"
-              sequence="2" />
-    <menuitem id="menu_active_types_list"
-              name="Data Types"
-              parent="menu_active_list_tests"
-              action="action_barcode_test_list_types"
-              sequence="3" />
-
-    <!-- ================================================================ -->
-    <!--                PASSIVE DEVICE (Keyboard Emulation)              -->
-    <!-- ================================================================ -->
-
-    <menuitem id="menu_passive_device"
-              name="Passive Device (KB Mode)"
-              parent="menu_test_barcode_root"
-              sequence="30" />
-
-    <!-- Form tests -->
-    <menuitem id="menu_passive_form_tests"
-              name="Form Views"
-              parent="menu_passive_device"
-              sequence="10" />
-
-    <menuitem id="menu_passive_rfid_form"
-              name="RFID Toggle (5s, KB)"
-              parent="menu_passive_form_tests"
-              action="action_barcode_test_single_rfid"
-              sequence="1" />
-    <menuitem id="menu_passive_weight_form"
-              name="NFC One-shot (KB)"
-              parent="menu_passive_form_tests"
-              action="action_barcode_test_single_weight"
-              sequence="2" />
-    <menuitem id="menu_passive_multi_form"
-              name="Multi Device (RFID + Camera + NFC)"
-              parent="menu_passive_form_tests"
-              action="action_barcode_test_multi_device"
-              sequence="3" />
-
-    <!-- List tests -->
-    <menuitem id="menu_passive_list_tests"
-              name="List Views"
-              parent="menu_passive_device"
-              sequence="20" />
-
-    <menuitem id="menu_passive_rfid_list"
-              name="RFID (KB)"
-              parent="menu_passive_list_tests"
-              action="action_barcode_test_list_rfid"
-              sequence="1" />
-
-    <!-- ================================================================ -->
-    <!--                    HYBRID (Active + Passive KB)                  -->
-    <!-- ================================================================ -->
-
-    <menuitem id="menu_hybrid_device"
-              name="Hybrid (HID + KB Mode)"
-              parent="menu_test_barcode_root"
-              sequence="40" />
-
-    <menuitem id="menu_hybrid_form"
-              name="Form — HID + RFID (KB)"
-              parent="menu_hybrid_device"
-              action="action_barcode_test_hybrid_form"
-              sequence="1" />
-    <menuitem id="menu_hybrid_list"
-              name="List — HID + RFID (KB)"
-              parent="menu_hybrid_device"
-              action="action_barcode_test_hybrid_list"
-              sequence="2" />
 
     <!-- ================================================================ -->
     <!--                         SETTINGS                                 -->
