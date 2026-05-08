@@ -89,7 +89,7 @@
             't4_passive_buttons': [
                 {
                     'id': 'rfid_reader',
-                    'title': 'Quét RFID',
+                    'title': 'Quét',
                     'icon': 'fa-wifi',
                     'position': 'status_bar',
                     'url': 'ws://localhost:9001/scan',
